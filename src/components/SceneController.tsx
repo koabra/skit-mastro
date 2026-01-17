@@ -7,6 +7,7 @@ import { useScriptStore } from '../stores/scriptStore';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
 import { parseScriptText } from '../utils/scriptParser';
 import { generateReportHtml } from '../utils/reportGenerator';
+import { getSceneDuration, formatDuration } from '../utils/timeUtils';
 
 interface SceneControllerProps {
   scene: Scene;
@@ -193,6 +194,8 @@ export function SceneController({ scene, isActiveContext, isSelectedContext, onS
   useEffect(() => {
       setItems(scene.items);
   }, [scene.items]);
+
+  const sceneDuration = getSceneDuration(scene);
   
   const handleReorder = (newItems: ScriptItem[]) => {
     setItems(newItems); // Optimistic update
@@ -253,12 +256,17 @@ export function SceneController({ scene, isActiveContext, isSelectedContext, onS
         </button>
 
         <div className="flex-1 space-y-2">
-            <input 
-                value={scene.title}
-                onChange={(e) => updateScene(scene.id, { title: e.target.value })}
-                className="bg-transparent text-xl font-bold text-white placeholder-white/20 outline-none w-full"
-                placeholder="Scene Title"
-            />
+            <div className="flex items-center justify-between">
+                <input 
+                    value={scene.title}
+                    onChange={(e) => updateScene(scene.id, { title: e.target.value })}
+                    className="bg-transparent text-xl font-bold text-white placeholder-white/20 outline-none w-full"
+                    placeholder="Scene Title"
+                />
+                <span className="text-xs font-mono text-slate-500 bg-white/5 px-2 py-1 rounded-md">
+                    {formatDuration(sceneDuration)}
+                </span>
+            </div>
             <AutoResizeTextarea 
                 value={scene.description}
                 onChange={(e) => updateScene(scene.id, { description: e.target.value })}

@@ -385,7 +385,20 @@ const loadProjectState = (newState: ProjectState) => {
     // 2. Set new state
     currentState = newState;
     
-    // 3. Persist and notify
+    // 3. Recalculate nextDialogueId to ensure no collisions
+    // Even if imported state has it, it's safer to re-verify against actual items
+    let maxId = 0;
+    currentState.scenes.forEach(scene => {
+        scene.items.forEach(item => {
+            if (item.type === 'dialogue' && typeof item.displayId === 'number') {
+                if (item.displayId > maxId) maxId = item.displayId;
+            }
+        });
+    });
+    // Ensure the counter is strictly higher than any existing ID
+    currentState.nextDialogueId = maxId + 1;
+
+    // 4. Persist and notify
     emitChange();
 };
 

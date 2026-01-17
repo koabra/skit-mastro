@@ -7,7 +7,8 @@ import { Play, Square, Music, Clapperboard, Layers, FileDown } from 'lucide-reac
 import { Reorder, useDragControls } from 'framer-motion';
 import type { Scene } from './types';
 import { generateReportHtml } from './utils/reportGenerator';
-import { exportProjectToZip, importProjectFromZip } from './utils/projectPersistence'; // Import persistence utils
+import { exportProjectToZip, importProjectFromZip } from './utils/projectPersistence';
+import { getTotalDuration, formatDuration } from './utils/timeUtils';
 
 // Wrapper for Scene Dragging
 function SortableScene({ scene, isActiveContext, isSelectedContext, onSelectItem }: { 
@@ -45,6 +46,7 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null); // Ref for hidden file input
 
   const flattenItems = useMemo(() => scenes.flatMap(s => s.items), [scenes]);
+  const totalDuration = useMemo(() => getTotalDuration(scenes), [scenes]);
 
   const handleMasterPlay = () => {
     if (playingItemId) {
@@ -140,9 +142,15 @@ function App() {
                     <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
                         SkitMastro
                     </h1>
-                    <p className="text-xs text-slate-500 font-medium">
-                        {scenes.length} Scenes • {flattenItems.length} Blocks • {actors.length} Actors
-                    </p>
+                    <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                        <span>{scenes.length} Scenes</span>
+                        <span>•</span>
+                        <span>{flattenItems.length} Blocks</span>
+                        <span>•</span>
+                        <span>{actors.length} Actors</span>
+                        <span>•</span>
+                        <span className="text-brand-400 font-bold">{formatDuration(totalDuration)}</span>
+                    </div>
                 </div>
             </div>
 
